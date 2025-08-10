@@ -16,6 +16,11 @@
         padding: 20px;
         font-weight: bold;
     }
+    .title {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #ffd166;
+    }
     .clock {
         font-size: 3.5rem;
         font-weight: bold;
@@ -55,8 +60,8 @@
 <body>
 
 <header>
+    <div class="title">سیستم بررسی شیفت‌های تاکسی</div>
     <div class="clock" id="clock"></div>
-    سیستم بررسی شیفت‌های تاکسی
 </header>
 
 <div class="section" id="current-shifts">
@@ -86,33 +91,17 @@ const shifts = [
     {name: "Leo Hover (Mohammad Nouri)", rank: "Taxi Director", times: [{days:"همه روزها", start:"19:00", end:"22:00"}]},
 
     {name: "Kourosh Zabeti", rank: "Deputy Director", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
-    {name: "Ali Yazdandost", rank: "Deputy Director", times: [
-        {days:"شنبه و سه‌شنبه", start:"11:00", end:"12:30"},
-        {days:"شنبه و سه‌شنبه", start:"20:00", end:"21:30"},
-        {days:"سایر روزها", start:"11:00", end:"12:30"},
-        {days:"سایر روزها", start:"19:00", end:"20:30"}
-    ]},
 
     {name: "Farhan Karimi", rank: "Taxi Attendant", times: [
         {days:"روز فرد", start:"10:00", end:"13:00"},
-        {days:"روز فرد", start:"19:00", end:"21:00"},
         {days:"روز زوج", start:"15:00", end:"16:00"},
         {days:"روز زوج", start:"19:00", end:"21:00"}
     ]},
     {name: "Meraj Farzadmanesh", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"10:00", end:"13:00"}]},
     {name: "Abbas Abbasi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"12:00", end:"15:00"}]},
-    {name: "Yasin Kowsari", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"18:00", end:"21:00"}]},
+    {name: "Yasin Kowsari", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"17:15", end:"20:15"}]},
     {name: "Mahdi Shateri", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"18:00", end:"21:00"}]},
-    {name: "Bardia Panjepour", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]},
-
-    {name: "Roham Farrahi", rank: "Taxi Management", times: [{days:"همه روزها", start:"19:00", end:"21:00"}]},
-    {name: "Theo Williams", rank: "Taxi Management", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]},
-    {name: "Mahdi Zamani", rank: "Taxi Management", times: [
-        {days:"روز زوج", start:"14:00", end:"17:00"},
-        {days:"روز فرد", start:"19:00", end:"21:00"}
-    ]},
-    {name: "Artin Fazli", rank: "Taxi Management", times: [{days:"همه روزها", start:"19:00", end:"22:00"}]},
-    {name: "AmirHesam Asadi", rank: "Taxi Management", times: [{days:"همه روزها", start:"17:00", end:"20:00"}]}
+    {name: "Bardia Panjepour", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]}
 ];
 
 function toPersianDigits(num) {
@@ -159,7 +148,11 @@ function getCurrentShifts() {
                     let rh = Math.floor(remain / 60);
                     let rm = remain % 60;
                     let nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank})</span>`;
-                    active.push(`${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`);
+                    if (rh === 0) {
+                        active.push(`${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`);
+                    } else {
+                        active.push(`${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`);
+                    }
                 }
             }
         });
@@ -200,4 +193,3 @@ renderFullSchedule();
 </script>
 </body>
 </html>
-
