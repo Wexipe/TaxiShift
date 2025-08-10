@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>سیستم بررسی شیفت‌های تاکسی</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+    body {
+        margin: 0;
+        font-family: 'Vazirmatn', sans-serif;
+        background: linear-gradient(135deg, #2b5876, #4e4376);
+        color: white;
+        text-align: center;
+    }
+    header {
+        padding: 20px;
+        font-weight: bold;
+    }
+    .clock {
+        font-size: 3.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .section {
+        background: rgba(255, 255, 255, 0.1);
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 900px;
+        backdrop-filter: blur(10px);
+    }
+    h2 {
+        margin-bottom: 15px;
+        color: #ffd166;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    th {
+        background: rgba(255,255,255,0.2);
+    }
+    .shift-now {
+        font-size: 1.1rem;
+        margin: 10px 0;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="clock" id="clock"></div>
+    سیستم بررسی شیفت‌های تاکسی
+</header>
+
+<div class="section" id="current-shifts">
+    <h2>شیفت فعلی</h2>
+    <div id="shift-list"></div>
+</div>
+
+<div class="section">
+    <h2>جدول کامل شیفت‌ها</h2>
+    <table id="full-schedule">
+        <thead>
+            <tr>
+                <th>نام</th>
+                <th>رنک</th>
+                <th>روز/حالت</th>
+                <th>ساعت</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+const shifts = [
+    {name: "Danyall Abbasi", rank: "Taxi Director", times: [{days:"همه روزها", start:"20:00", end:"23:00"}]},
+    {name: "Amir Mahdi Jafari", rank: "Taxi Director", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
+    {name: "Leo Hover (Mohammad Nouri)", rank: "Taxi Director", times: [{days:"همه روزها", start:"19:00", end:"22:00"}]},
+
+    {name: "Kourosh Zabeti", rank: "Deputy Director", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
+    {name: "Ali Yazdandost", rank: "Deputy Director", times: [
+        {days:"شنبه و سه‌شنبه", start:"11:00", end:"12:30"},
+        {days:"شنبه و سه‌شنبه", start:"20:00", end:"21:30"},
+        {days:"سایر روزها", start:"11:00", end:"12:30"},
+        {days:"سایر روزها", start:"19:00", end:"20:30"}
+    ]},
+
+    {name: "Farhan Karimi", rank: "Taxi Attendant", times: [
+        {days:"روز فرد", start:"10:00", end:"13:00"},
+        {days:"روز فرد", start:"19:00", end:"21:00"},
+        {days:"روز زوج", start:"15:00", end:"16:00"},
+        {days:"روز زوج", start:"19:00", end:"21:00"}
+    ]},
+    {name: "Meraj Farzadmanesh", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"10:00", end:"13:00"}]},
+    {name: "Abbas Abbasi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"12:00", end:"15:00"}]},
+    {name: "Yasin Kowsari", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"18:00", end:"21:00"}]},
+    {name: "Mahdi Shateri", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"18:00", end:"21:00"}]},
+    {name: "Bardia Panjepour", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]},
+
+    {name: "Roham Farrahi", rank: "Taxi Management", times: [{days:"همه روزها", start:"19:00", end:"21:00"}]},
+    {name: "Theo Williams", rank: "Taxi Management", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]},
+    {name: "Mahdi Zamani", rank: "Taxi Management", times: [
+        {days:"روز زوج", start:"14:00", end:"17:00"},
+        {days:"روز فرد", start:"19:00", end:"21:00"}
+    ]},
+    {name: "Artin Fazli", rank: "Taxi Management", times: [{days:"همه روزها", start:"19:00", end:"22:00"}]},
+    {name: "AmirHesam Asadi", rank: "Taxi Management", times: [{days:"همه روزها", start:"17:00", end:"20:00"}]}
+];
+
+function toPersianDigits(num) {
+    return num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+
+function updateClock() {
+    const now = new Date();
+    const h = toPersianDigits(now.getHours().toString().padStart(2, '0'));
+    const m = toPersianDigits(now.getMinutes().toString().padStart(2, '0'));
+    const s = toPersianDigits(now.getSeconds().toString().padStart(2, '0'));
+    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+}
+
+function isEvenDay(date) {
+    return date.getDate() % 2 === 0;
+}
+
+function getCurrentShifts() {
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const even = isEvenDay(now);
+    const day = now.getDay();
+
+    let active = [];
+
+    shifts.forEach(person => {
+        person.times.forEach(t => {
+            let match = false;
+            if (t.days === "همه روزها") match = true;
+            if (t.days === "روز زوج" && even) match = true;
+            if (t.days === "روز فرد" && !even) match = true;
+            if (t.days === "شنبه و سه‌شنبه" && (day === 6 || day === 2)) match = true;
+            if (t.days === "سایر روزها" && !(day === 6 || day === 2)) match = true;
+
+            if (match) {
+                let [sh, sm] = t.start.split(':').map(Number);
+                let [eh, em] = t.end.split(':').map(Number);
+                let startMins = sh * 60 + sm;
+                let endMins = eh * 60 + em;
+                if (endMins === 0) endMins = 24 * 60;
+                if (currentTime >= startMins && currentTime < endMins) {
+                    let remain = endMins - currentTime;
+                    let rh = Math.floor(remain / 60);
+                    let rm = remain % 60;
+                    let nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank})</span>`;
+                    active.push(`${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`);
+                }
+            }
+        });
+    });
+
+    return active;
+}
+
+function renderCurrentShifts() {
+    const list = getCurrentShifts();
+    document.getElementById('shift-list').innerHTML = list.length ?
+        list.map(s => `<div class="shift-now">${s}</div>`).join('') :
+        `<div class="shift-now">در حال حاضر کسی در شیفت نیست</div>`;
+}
+
+function renderFullSchedule() {
+    const tbody = document.querySelector('#full-schedule tbody');
+    tbody.innerHTML = '';
+    shifts.forEach(p => {
+        p.times.forEach(t => {
+            tbody.innerHTML += `
+                <tr>
+                    <td><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
+                    <td><span dir="ltr" style="display:inline-block;">${p.rank}</span></td>
+                    <td>${t.days}</td>
+                    <td>${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
+                </tr>
+            `;
+        });
+    });
+}
+
+setInterval(updateClock, 1000);
+setInterval(renderCurrentShifts, 1000);
+updateClock();
+renderCurrentShifts();
+renderFullSchedule();
+</script>
+</body>
+</html>
