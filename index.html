@@ -5,55 +5,101 @@
 <title>سیستم بررسی شیفت‌های تاکسی</title>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+    
     body {
         margin: 0;
         font-family: 'Vazirmatn', sans-serif;
-        background: linear-gradient(135deg, #2b5876, #4e4376);
+        background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
         color: white;
         text-align: center;
+        background-size: 400% 400%;
+        animation: bgAnimation 20s ease infinite;
     }
+
+    @keyframes bgAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
     header {
         padding: 20px;
         font-weight: bold;
+        background: rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        border-bottom: 2px solid rgba(255,255,255,0.2);
     }
+
     .title {
-        font-size: 2rem;
+        font-size: 2.5rem;
         margin-bottom: 10px;
         color: #ffd166;
+        text-shadow: 0 0 10px rgba(255,209,102,0.8);
     }
+
     .clock {
         font-size: 3.5rem;
         font-weight: bold;
         margin-bottom: 10px;
+        color: #fff;
+        text-shadow: 0 0 15px #ffd166, 0 0 30px #ffae00;
     }
+
     .section {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.08);
         margin: 20px auto;
         padding: 20px;
-        border-radius: 15px;
+        border-radius: 20px;
         width: 90%;
         max-width: 900px;
         backdrop-filter: blur(10px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+    .section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    }
+
     h2 {
         margin-bottom: 15px;
         color: #ffd166;
+        text-shadow: 0 0 8px rgba(255,209,102,0.7);
     }
+
     table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
+        overflow: hidden;
+        border-radius: 15px;
     }
+
     th, td {
-        padding: 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.2);
+        padding: 12px;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
     }
+
     th {
-        background: rgba(255,255,255,0.2);
+        background: linear-gradient(135deg, rgba(255,209,102,0.5), rgba(255,255,255,0.1));
+        font-weight: bold;
     }
+
+    tr:hover {
+        background: rgba(255,255,255,0.05);
+        transition: background 0.3s ease;
+    }
+
     .shift-now {
         font-size: 1.1rem;
         margin: 10px 0;
+        animation: fadeIn 0.5s ease;
+        direction: rtl;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 </head>
@@ -89,9 +135,7 @@ const shifts = [
     {name: "Danyall Abbasi", rank: "Taxi Director", times: [{days:"همه روزها", start:"20:00", end:"23:00"}]},
     {name: "Amir Mahdi Jafari", rank: "Taxi Director", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
     {name: "Leo Hover (Mohammad Nouri)", rank: "Taxi Director", times: [{days:"همه روزها", start:"19:00", end:"22:00"}]},
-
     {name: "Kourosh Zabeti", rank: "Deputy Director", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
-
     {name: "Farhan Karimi", rank: "Taxi Attendant", times: [
         {days:"روز فرد", start:"10:00", end:"13:00"},
         {days:"روز زوج", start:"15:00", end:"16:00"},
@@ -104,15 +148,15 @@ const shifts = [
     {name: "Bardia Panjepour", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]}
 ];
 
-function toPersianDigits(num) {
-    return num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+function toPersianDigits(input) {
+    return String(input).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 }
 
 function updateClock() {
     const now = new Date();
-    const h = toPersianDigits(now.getHours().toString().padStart(2, '0'));
-    const m = toPersianDigits(now.getMinutes().toString().padStart(2, '0'));
-    const s = toPersianDigits(now.getSeconds().toString().padStart(2, '0'));
+    const h = toPersianDigits(String(now.getHours()).padStart(2, '0'));
+    const m = toPersianDigits(String(now.getMinutes()).padStart(2, '0'));
+    const s = toPersianDigits(String(now.getSeconds()).padStart(2, '0'));
     document.getElementById('clock').textContent = `${h}:${m}:${s}`;
 }
 
@@ -126,7 +170,7 @@ function getCurrentShifts() {
     const even = isEvenDay(now);
     const day = now.getDay();
 
-    let active = [];
+    const active = [];
 
     shifts.forEach(person => {
         person.times.forEach(t => {
@@ -137,23 +181,45 @@ function getCurrentShifts() {
             if (t.days === "شنبه و سه‌شنبه" && (day === 6 || day === 2)) match = true;
             if (t.days === "سایر روزها" && !(day === 6 || day === 2)) match = true;
 
-            if (match) {
-                let [sh, sm] = t.start.split(':').map(Number);
-                let [eh, em] = t.end.split(':').map(Number);
-                let startMins = sh * 60 + sm;
-                let endMins = eh * 60 + em;
-                if (endMins === 0) endMins = 24 * 60;
+            if (!match) return;
+
+            const [sh, sm] = t.start.split(':').map(Number);
+            const [eh, em] = t.end.split(':').map(Number);
+            const startMins = sh * 60 + sm;
+            let endMins = eh * 60 + em;
+
+            // treat 00:00 as end of day
+            if (endMins === 0) endMins = 24 * 60;
+
+            let inShift = false;
+            let remain = 0;
+
+            if (startMins <= endMins) {
+                // same-day interval
                 if (currentTime >= startMins && currentTime < endMins) {
-                    let remain = endMins - currentTime;
-                    let rh = Math.floor(remain / 60);
-                    let rm = remain % 60;
-                    let nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank})</span>`;
-                    if (rh === 0) {
-                        active.push(`${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`);
+                    inShift = true;
+                    remain = endMins - currentTime;
+                }
+            } else {
+                // overnight interval (e.g., 22:00 -> 03:00)
+                if (currentTime >= startMins || currentTime < endMins) {
+                    inShift = true;
+                    if (currentTime >= startMins) {
+                        remain = (24 * 60 - currentTime) + endMins;
                     } else {
-                        active.push(`${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`);
+                        remain = endMins - currentTime;
                     }
                 }
+            }
+
+            if (inShift) {
+                const rh = Math.floor(remain / 60);
+                const rm = remain % 60;
+                const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank})</span>`;
+                const text = rh === 0
+                    ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`
+                    : `${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`;
+                active.push(text);
             }
         });
     });
@@ -161,11 +227,18 @@ function getCurrentShifts() {
     return active;
 }
 
+let lastShiftHTML = "";
+
 function renderCurrentShifts() {
     const list = getCurrentShifts();
-    document.getElementById('shift-list').innerHTML = list.length ?
-        list.map(s => `<div class="shift-now">${s}</div>`).join('') :
-        `<div class="shift-now">در حال حاضر کسی در شیفت نیست</div>`;
+    const newHTML = list.length
+        ? list.map(s => `<div class="shift-now">${s}</div>`).join('')
+        : `<div class="shift-now">در حال حاضر کسی در شیفت نیست</div>`;
+
+    if (newHTML !== lastShiftHTML) {
+        document.getElementById('shift-list').innerHTML = newHTML;
+        lastShiftHTML = newHTML;
+    }
 }
 
 function renderFullSchedule() {
@@ -185,11 +258,12 @@ function renderFullSchedule() {
     });
 }
 
-setInterval(updateClock, 1000);
-setInterval(renderCurrentShifts, 1000);
 updateClock();
 renderCurrentShifts();
 renderFullSchedule();
+
+setInterval(updateClock, 1000);
+setInterval(renderCurrentShifts, 1000);
 </script>
 </body>
 </html>
