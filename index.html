@@ -103,7 +103,6 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 📱 حالت موبایل */
     @media (max-width: 768px) {
         .title {
             font-size: 1.6rem;
@@ -194,6 +193,14 @@ const shifts = [
     {name: "Bardia Panjepour", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]}
 ];
 
+// ترتیب جدید رنک‌ها
+const rankOrder = {
+    "Taxi Director": 1,
+    "Deputy Director": 2,
+    "Taxi Attendant": 3,
+    "Head Of Taxi": 4
+};
+
 function toPersianDigits(input) {
     return String(input).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 }
@@ -215,57 +222,58 @@ function getCurrentShifts() {
     const currentTime = now.getHours() * 60 + now.getMinutes();
     const even = isEvenDay(now);
     const day = now.getDay();
-
     const active = [];
 
-    shifts.forEach(person => {
-        person.times.forEach(t => {
-            let match = false;
-            if (t.days === "همه روزها") match = true;
-            if (t.days === "روز زوج" && even) match = true;
-            if (t.days === "روز فرد" && !even) match = true;
-            if (t.days === "شنبه و سه‌شنبه" && (day === 6 || day === 2)) match = true;
-            if (t.days === "سایر روزها" && !(day === 6 || day === 2)) match = true;
+    shifts
+        .slice()
+        .sort((a, b) => rankOrder[a.rank] - rankOrder[b.rank])
+        .forEach(person => {
+            person.times.forEach(t => {
+                let match = false;
+                if (t.days === "همه روزها") match = true;
+                if (t.days === "روز زوج" && even) match = true;
+                if (t.days === "روز فرد" && !even) match = true;
+                if (t.days === "شنبه و سه‌شنبه" && (day === 6 || day === 2)) match = true;
+                if (t.days === "سایر روزها" && !(day === 6 || day === 2)) match = true;
 
-            if (!match) return;
+                if (!match) return;
 
-            const [sh, sm] = t.start.split(':').map(Number);
-            const [eh, em] = t.end.split(':').map(Number);
-            const startMins = sh * 60 + sm;
-            let endMins = eh * 60 + em;
+                const [sh, sm] = t.start.split(':').map(Number);
+                const [eh, em] = t.end.split(':').map(Number);
+                const startMins = sh * 60 + sm;
+                let endMins = eh * 60 + em;
+                if (endMins === 0) endMins = 24 * 60;
 
-            if (endMins === 0) endMins = 24 * 60;
+                let inShift = false;
+                let remain = 0;
 
-            let inShift = false;
-            let remain = 0;
-
-            if (startMins <= endMins) {
-                if (currentTime >= startMins && currentTime < endMins) {
-                    inShift = true;
-                    remain = endMins - currentTime;
-                }
-            } else {
-                if (currentTime >= startMins || currentTime < endMins) {
-                    inShift = true;
-                    if (currentTime >= startMins) {
-                        remain = (24 * 60 - currentTime) + endMins;
-                    } else {
+                if (startMins <= endMins) {
+                    if (currentTime >= startMins && currentTime < endMins) {
+                        inShift = true;
                         remain = endMins - currentTime;
                     }
+                } else {
+                    if (currentTime >= startMins || currentTime < endMins) {
+                        inShift = true;
+                        if (currentTime >= startMins) {
+                            remain = (24 * 60 - currentTime) + endMins;
+                        } else {
+                            remain = endMins - currentTime;
+                        }
+                    }
                 }
-            }
 
-            if (inShift) {
-                const rh = Math.floor(remain / 60);
-                const rm = remain % 60;
-                const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank})</span>`;
-                const text = rh === 0
-                    ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`
-                    : `${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`;
-                active.push(text);
-            }
+                if (inShift) {
+                    const rh = Math.floor(remain / 60);
+                    const rm = remain % 60;
+                    const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank})</span>`;
+                    const text = rh === 0
+                        ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`
+                        : `${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`;
+                    active.push(text);
+                }
+            });
         });
-    });
 
     return active;
 }
@@ -287,18 +295,21 @@ function renderCurrentShifts() {
 function renderFullSchedule() {
     const tbody = document.querySelector('#full-schedule tbody');
     tbody.innerHTML = '';
-    shifts.forEach(p => {
-        p.times.forEach(t => {
-            tbody.innerHTML += `
-                <tr>
-                    <td data-label="نام"><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
-                    <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank}</span></td>
-                    <td data-label="روز/حالت">${t.days}</td>
-                    <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
-                </tr>
-            `;
+    shifts
+        .slice()
+        .sort((a, b) => rankOrder[a.rank] - rankOrder[b.rank])
+        .forEach(p => {
+            p.times.forEach(t => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td data-label="نام"><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
+                        <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank}</span></td>
+                        <td data-label="روز/حالت">${t.days}</td>
+                        <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
+                    </tr>
+                `;
+            });
         });
-    });
 }
 
 updateClock();
