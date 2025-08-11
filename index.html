@@ -78,6 +78,7 @@
     th, td {
         padding: 12px;
         border-bottom: 1px solid rgba(255,255,255,0.15);
+        text-align: center;
     }
 
     th {
@@ -100,6 +101,42 @@
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(5px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 📱 حالت موبایل */
+    @media (max-width: 768px) {
+        .title {
+            font-size: 1.6rem;
+        }
+        .clock {
+            font-size: 2rem;
+        }
+        table, thead, tbody, th, td, tr {
+            display: block;
+            width: 100%;
+        }
+        thead {
+            display: none;
+        }
+        tr {
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        td {
+            border: none;
+            padding: 8px 10px;
+            text-align: right;
+            position: relative;
+        }
+        td::before {
+            content: attr(data-label);
+            font-weight: bold;
+            color: #ffd166;
+            display: block;
+            margin-bottom: 5px;
+        }
     }
 </style>
 </head>
@@ -188,20 +225,17 @@ function getCurrentShifts() {
             const startMins = sh * 60 + sm;
             let endMins = eh * 60 + em;
 
-            // treat 00:00 as end of day
             if (endMins === 0) endMins = 24 * 60;
 
             let inShift = false;
             let remain = 0;
 
             if (startMins <= endMins) {
-                // same-day interval
                 if (currentTime >= startMins && currentTime < endMins) {
                     inShift = true;
                     remain = endMins - currentTime;
                 }
             } else {
-                // overnight interval (e.g., 22:00 -> 03:00)
                 if (currentTime >= startMins || currentTime < endMins) {
                     inShift = true;
                     if (currentTime >= startMins) {
@@ -248,10 +282,10 @@ function renderFullSchedule() {
         p.times.forEach(t => {
             tbody.innerHTML += `
                 <tr>
-                    <td><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
-                    <td><span dir="ltr" style="display:inline-block;">${p.rank}</span></td>
-                    <td>${t.days}</td>
-                    <td>${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
+                    <td data-label="نام"><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
+                    <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank}</span></td>
+                    <td data-label="روز/حالت">${t.days}</td>
+                    <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
                 </tr>
             `;
         });
