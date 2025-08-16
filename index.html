@@ -178,10 +178,9 @@ const shifts = [
         {days:"روز زوج", start:"13:00", end:"16:00"},
         {days:"روز فرد", start:"19:00", end:"21:00"}
     ]},
-    {name: "Artin Fazli", rank: "Head Of Taxi", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]},
     {name: "Arad Toosi", rank: "Head Of Taxi", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]},
     {name: "Parham Soleimanii", rank: "Head Of Taxi", times: [{days:"همه روزها", start:"09:00", end:"12:00"}]},
-    {name: "Radin Ravanbod", rank: "Head Of Taxi", times: [{days:"همه روزها", start:"17:00", end:"20:00"}]}, <!-- 👈 اضافه شد -->
+    {name: "Radin Ravanbod", rank: "Head Of Taxi", times: [{days:"همه روزها", start:"17:00", end:"20:00"}]},
     
     {name: "Meraj Farzadmanesh", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"10:00", end:"13:00"}]},
     {name: "Abbas Abbasi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"12:00", end:"15:00"}]},
@@ -191,7 +190,6 @@ const shifts = [
     {name: "Bardia Panjepour", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]}
 ];
 
-// ترتیب جدید رنک‌ها
 const rankOrder = {
     "Taxi Director": 1,
     "Deputy Director": 2,
@@ -236,86 +234,3 @@ function getCurrentShifts() {
 
                 if (!match) return;
 
-                const [sh, sm] = t.start.split(':').map(Number);
-                const [eh, em] = t.end.split(':').map(Number);
-                const startMins = sh * 60 + sm;
-                let endMins = eh * 60 + em;
-                if (endMins === 0) endMins = 24 * 60;
-
-                let inShift = false;
-                let remain = 0;
-
-                if (startMins <= endMins) {
-                    if (currentTime >= startMins && currentTime < endMins) {
-                        inShift = true;
-                        remain = endMins - currentTime;
-                    }
-                } else {
-                    if (currentTime >= startMins || currentTime < endMins) {
-                        inShift = true;
-                        if (currentTime >= startMins) {
-                            remain = (24 * 60 - currentTime) + endMins;
-                        } else {
-                            remain = endMins - currentTime;
-                        }
-                    }
-                }
-
-                if (inShift) {
-                    const rh = Math.floor(remain / 60);
-                    const rm = remain % 60;
-                    const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank})</span>`;
-                    const text = rh === 0
-                        ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`
-                        : `${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`;
-                    active.push(text);
-                }
-            });
-        });
-
-    return active;
-}
-
-let lastShiftHTML = "";
-
-function renderCurrentShifts() {
-    const list = getCurrentShifts();
-    const newHTML = list.length
-        ? list.map(s => `<div class="shift-now">${s}</div>`).join('')
-        : `<div class="shift-now">در حال حاضر کسی در شیفت نیست</div>`;
-
-    if (newHTML !== lastShiftHTML) {
-        document.getElementById('shift-list').innerHTML = newHTML;
-        lastShiftHTML = newHTML;
-    }
-}
-
-function renderFullSchedule() {
-    const tbody = document.querySelector('#full-schedule tbody');
-    tbody.innerHTML = '';
-    shifts
-        .slice()
-        .sort((a, b) => rankOrder[a.rank] - rankOrder[b.rank])
-        .forEach(p => {
-            p.times.forEach(t => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td data-label="نام"><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
-                        <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank}</span></td>
-                        <td data-label="روز/حالت">${t.days}</td>
-                        <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
-                    </tr>
-                `;
-            });
-        });
-}
-
-updateClock();
-renderCurrentShifts();
-renderFullSchedule();
-
-setInterval(updateClock, 1000);
-setInterval(renderCurrentShifts, 1000);
-</script>
-</body>
-</html>
