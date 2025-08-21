@@ -117,6 +117,7 @@
     .tag.Tour { background: rgba(180, 0, 255, 0.2); color: #c77dff; }
     .tag.Entertainment { background: rgba(255, 0, 100, 0.2); color: #ff4081; }
     .tag.Management { background: rgba(0, 0, 128, 0.3); color: #001f7f; }
+    .tag.WTM { background: #fff; color: #000; border: 1px solid #000; }
 
     .on-leave { color: #ff4d4d; font-weight: bold; }
 
@@ -196,25 +197,30 @@ const shifts = [
     {name: "Ali Iranshahi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"12:30", end:"15:30"}]},
     {name: "Parsa Rahimi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"12:00", end:"15:00"}]},
     
-    {name: "Mahdi Zamani", rank: "Head Of Taxi", tag:"Pilot", times: [
+    {name: "Mahdi Zamani", rank: "Head Of Taxi", tags:["Pilot"], times: [
         {days:"روز زوج", start:"13:00", end:"16:00"},
         {days:"روز فرد", start:"19:00", end:"21:00"}
     ]},
-    {name: "Parham Soleimanii", rank: "Head Of Taxi", tag:"Food", times: [{days:"همه روزها", start:"09:00", end:"12:00"}]},
-    {name: "Radin Ravanbod", rank: "Head Of Taxi", tag:"Tour", leave:true, times: [{days:"همه روزها", start:"17:00", end:"20:00"}]},
+    {name: "Parham Soleimanii", rank: "Head Of Taxi", tags:["Food"], times: [{days:"همه روزها", start:"09:00", end:"12:00"}]},
+    {name: "Radin Ravanbod", rank: "Head Of Taxi", tags:["Tour"], leave:true, times: [{days:"همه روزها", start:"17:00", end:"20:00"}]},
     
-    {name: "Hossein Mansouri", rank: "Head Of Taxi", tag:"Tour", times: [
+    {name: "Hossein Mansouri", rank: "Head Of Taxi", tags:["Tour"], times: [
         {days:"شنبه تا چهارشنبه", start:"18:00", end:"21:00"},
         {days:"پنج‌شنبه و جمعه", start:"11:00", end:"14:00"}
     ]},
-    {name: "Alireza Hamedzade", rank: "Head Of Taxi", tag:"Station", times: [
+    {name: "Alireza Hamedzade", rank: "Head Of Taxi", tags:["Station"], times: [
         {days:"همه روزها", start:"21:00", end:"00:00"}
     ]},
-    {name: "Artin Fazli", rank: "Head Of Taxi", tag:"Management", times: [
+    {name: "Artin Fazli", rank: "Head Of Taxi", tags:["Management"], times: [
         {days:"همه روزها", start:"14:00", end:"19:00"}
     ]},
-    {name: "Mahdi Shateri", rank: "Head Of Taxi", tag:"Entertainment", times: [
+    {name: "Mahdi Shateri", rank: "Head Of Taxi", tags:["Entertainment"], times: [
         {days:"همه روزها", start:"18:00", end:"21:00"}
+    ]},
+
+    // 🔹 یاسین کوثری
+    {name: "Yasin Kowsari", rank: "Taxi Deputy Director", tags:["Pilot","WTM"], times: [
+        {days:"همه روزها", start:"21:00", end:"00:00"}
     ]}
 ];
 
@@ -225,9 +231,9 @@ const rankOrder = {
     "Head Of Taxi": 4
 };
 
-function renderTag(tag) {
-    if (!tag) return "";
-    return `<span class="tag ${tag}">[ ${tag} ]</span>`;
+function renderTags(tags) {
+    if (!tags) return "";
+    return tags.map(t => `<span class="tag ${t}">[ ${t} ]</span>`).join(" ");
 }
 
 function toPersianDigits(input) {
@@ -303,7 +309,7 @@ function getCurrentShifts() {
                         extra = ` <span class="on-leave">(مرخصی)</span>`;
                     }
 
-                    const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank}) ${renderTag(person.tag)}${extra}</span>`;
+                    const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank}) ${renderTags(person.tags)}${extra}</span>`;
                     const text = rh === 0
                         ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`
                         : `${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`;
@@ -340,7 +346,7 @@ function renderFullSchedule() {
                 tbody.innerHTML += `
                     <tr>
                         <td data-label="نام"><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
-                        <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank} ${renderTag(p.tag)} ${p.leave ? '<span class="on-leave">(مرخصی)</span>' : ''}</span></td>
+                        <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank} ${renderTags(p.tags)} ${p.leave ? '<span class="on-leave">(مرخصی)</span>' : ''}</span></td>
                         <td data-label="روز/حالت">${t.days}</td>
                         <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
                     </tr>
@@ -358,4 +364,3 @@ setInterval(renderCurrentShifts, 1000);
 </script>
 </body>
 </html>
-
