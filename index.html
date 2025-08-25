@@ -117,8 +117,6 @@
     .tag.Tour { background: rgba(180, 0, 255, 0.2); color: #c77dff; }
     .tag.Entertainment { background: rgba(255, 0, 100, 0.2); color: #ff4081; }
     .tag.Management { background: rgba(0, 0, 128, 0.3); color: #001f7f; }
-    .tag.WTM { background: rgba(0,0,0,0.2); color: #000000; }
-
     .on-leave { color: #ff4d4d; font-weight: bold; }
 
     @media (max-width: 768px) {
@@ -190,12 +188,10 @@ const shifts = [
     {name: "Amir Mahdi Jafari", rank: "Taxi Director", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
     {name: "Leo Hover (Mohammad Nouri)", rank: "Taxi Director", times: [{days:"همه روزها", start:"19:00", end:"22:00"}]},
     {name: "Kourosh Zabeti", rank: "Taxi Deputy Director", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
-    {name: "Bardia Panjepour", rank: "Taxi Deputy Director", times: [{days:"همه روزها", start:"21:00", end:"00:00"}]},
     
     {name: "Meraj Farzadmanesh", rank: "Taxi Deputy Director", times: [{days:"همه روزها", start:"10:00", end:"13:00"}]},
     {name: "Abbas Abbasi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"14:00", end:"17:00"}]},
     {name: "Ali Iranshahi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"12:30", end:"15:30"}]},
-    {name: "Parsa Rahimi", rank: "Taxi Attendant", times: [{days:"همه روزها", start:"12:00", end:"15:00"}]},
     
     {name: "Mahdi Zamani", rank: "Head Of Taxi", tags:["Pilot"], times: [
         {days:"روز زوج", start:"13:00", end:"16:00"},
@@ -218,7 +214,7 @@ const shifts = [
         {days:"روز زوج", start:"14:00", end:"17:00"}
     ]},
 
-    {name: "Yasin Kowsari", rank: "Taxi Deputy Director", tags:["Pilot","WTM"], times: [
+    {name: "Yasin Kowsari", rank: "Taxi Deputy Director", tags:["Pilot"], times: [
         {days:"همه روزها", start:"17:00", end:"20:00"}
     ]}
 ];
@@ -260,7 +256,7 @@ function getCurrentShifts() {
 
     shifts
         .slice()
-        .sort((a, b) => rankOrder[a.rank] - rankOrder[b.rank])
+        .sort((a, b) => (rankOrder[a.rank] || Infinity) - (rankOrder[b.rank] || Infinity))
         .forEach(person => {
             person.times.forEach(t => {
                 let match = false;
@@ -278,7 +274,7 @@ function getCurrentShifts() {
                 const [eh, em] = t.end.split(':').map(Number);
                 const startMins = sh * 60 + sm;
                 let endMins = eh * 60 + em;
-                if (endMins === 0) endMins = 24 * 60;
+                if (endMins === 0) endMins = 24 * 60; // اصلاح پایان نیمه شب
 
                 let inShift = false;
                 let remain = 0;
@@ -302,12 +298,7 @@ function getCurrentShifts() {
                 if (inShift) {
                     const rh = Math.floor(remain / 60);
                     const rm = remain % 60;
-
-                    let extra = "";
-                    if (person.leave) {
-                        extra = ` <span class="on-leave">(مرخصی)</span>`;
-                    }
-
+                    let extra = person.leave ? ` <span class="on-leave">(مرخصی)</span>` : "";
                     const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank}) ${renderTags(person.tags)}${extra}</span>`;
                     const text = rh === 0
                         ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`
@@ -336,22 +327,17 @@ function renderCurrentShifts() {
 
 function renderFullSchedule() {
     const tbody = document.querySelector('#full-schedule tbody');
-    tbody.innerHTML = '';
-    shifts
+    tbody.innerHTML = shifts
         .slice()
-        .sort((a, b) => rankOrder[a.rank] - rankOrder[b.rank])
-        .forEach(p => {
-            p.times.forEach(t => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td data-label="نام"><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
-                        <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank} ${renderTags(p.tags)} ${p.leave ? '<span class="on-leave">(مرخصی)</span>' : ''}</span></td>
-                        <td data-label="روز/حالت">${t.days}</td>
-                        <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
-                    </tr>
-                `;
-            });
-        });
+        .sort((a, b) => (rankOrder[a.rank] || Infinity) - (rankOrder[b.rank] || Infinity))
+        .map(p => p.times.map(t => `
+            <tr>
+                <td data-label="نام"><span dir="ltr" style="display:inline-block;">${p.name}</span></td>
+                <td data-label="رنک"><span dir="ltr" style="display:inline-block;">${p.rank} ${renderTags(p.tags)} ${p.leave ? '<span class="on-leave">(مرخصی)</span>' : ''}</span></td>
+                <td data-label="روز/حالت">${t.days}</td>
+                <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
+            </tr>
+        `).join("")).join("");
 }
 
 updateClock();
@@ -363,4 +349,3 @@ setInterval(renderCurrentShifts, 1000);
 </script>
 </body>
 </html>
-
