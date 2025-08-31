@@ -7,7 +7,7 @@
       @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap");
 
       * {
-        box-sizing: border-box; /* اضافه شد تا همه عناصر از box-sizing: border-box استفاده کنند */
+        box-sizing: border-box;
       }
 
       body {
@@ -163,7 +163,7 @@
         font-weight: bold;
       }
 
-      /* note popup */
+      /* popup note */
       .note-popup {
         position: fixed;
         left: 50%;
@@ -195,8 +195,7 @@
         border-radius: 16px;
         padding: 16px;
         color: #fff;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-        direction: rtl; /* متن داخل راست چین شود */
+        direction: rtl;
         box-sizing: border-box;
       }
 
@@ -334,21 +333,13 @@
       </table>
     </div>
 
-    <!-- note popup -->
+    <!-- popup note -->
     <div class="modal-overlay" id="modalOverlay" aria-hidden="true"></div>
-    <div
-      class="note-popup"
-      id="notePopup"
-      role="dialog"
-      aria-modal="true"
-      aria-hidden="true"
-    >
+    <div class="note-popup" id="notePopup" role="dialog" aria-modal="true" aria-hidden="true">
       <div class="note-border">
         <div class="note-inner">
           <h3 id="noteTitle">یادداشت</h3>
-          <textarea
-            id="noteText"
-          ></textarea>
+          <textarea id="noteText"></textarea>
           <div class="note-actions">
             <button class="btn primary" id="saveNote">ذخیره</button>
             <button class="btn ghost" id="closeNote">بستن</button>
@@ -358,84 +349,23 @@
     </div>
     <div id="noteSaved">نوت ذخیره شد</div>
 
-    <audio
-      id="notifSound"
-      src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-      preload="auto"
-    ></audio>
+    <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
     <script>
       // داده‌ها
       const shifts = [
-        {
-          name: "Danyall Abbasi",
-          rank: "Taxi Director",
-          times: [{ days: "همه روزها", start: "20:00", end: "23:00" }],
-        },
-        {
-          name: "Leo Hover (Mohammad Nouri)",
-          rank: "Taxi Director",
-          times: [{ days: "همه روزها", start: "19:00", end: "22:00" }],
-        },
-        {
-          name: "Kourosh Zabeti",
-          rank: "Taxi Deputy Director",
-          times: [{ days: "همه روزها", start: "14:00", end: "17:00" }],
-        },
-        {
-          name: "Meraj Farzadmanesh",
-          rank: "Taxi Deputy Director",
-          times: [{ days: "همه روزها", start: "10:00", end: "13:00" }],
-        },
-        {
-          name: "Abbas Abbasi",
-          rank: "Taxi Attendant",
-          times: [{ days: "همه روزها", start: "14:00", end: "17:00" }],
-        },
-        {
-          name: "Ali Iranshahi",
-          rank: "Taxi Attendant",
-          times: [{ days: "همه روزها", start: "12:30", end: "15:30" }],
-        },
-        {
-          name: "Ariyan Rozbeh",
-          rank: "Taxi Attendant",
-          times: [{ days: "همه روزها", start: "22:00", end: "1:00" }],
-        },
-        {
-          name: "Mahdi Zamani",
-          rank: "Taxi Manager",
-          tags: ["Pilot"],
-          times: [
-            { days: "روز زوج", start: "13:00", end: "16:00" },
-            { days: "روز فرد", start: "19:00", end: "21:00" },
-          ],
-        },
-        {
-          name: "Parham Soleimanii",
-          rank: "Taxi Attendant",
-          times: [{ days: "همه روزها", start: "10:00", end: "13:00" }],
-        },
-        {
-          name: "Taha Azizii",
-          rank: "Taxi Manager",
-          tags: ["Food"]
-          times: [{ days: "همه روزها", start: "10:00", end: "13:00" }],
-        },
-        {
-          name: "Mahdi Shateri",
-          rank: "Taxi Manager",
-          tags: ["Entertainment"],
-          times: [
-            { days: "روز فرد", start: "13:00", end: "16:00" },
-            { days: "روز زوج", start: "14:00", end: "17:00" },
-          ],
-        },
-        {
-          name: "Yasin Kowsari",
-          rank: "Taxi Deputy Director",
-          times: [{ days: "همه روزها", start: "18:00", end: "21:00" }],
-        },
+        { name: "Danyall Abbasi", rank: "Taxi Director", times: [{ days: "همه روزها", start: "20:00", end: "23:00" }] },
+        { name: "Leo Hover (Mohammad Nouri)", rank: "Taxi Director", times: [{ days: "همه روزها", start: "19:00", end: "22:00" }] },
+        { name: "Kourosh Zabeti", rank: "Taxi Deputy Director", times: [{ days: "همه روزها", start: "14:00", end: "17:00" }] },
+        { name: "Meraj Farzadmanesh", rank: "Taxi Deputy Director", times: [{ days: "همه روزها", start: "10:00", end: "13:00" }] },
+        { name: "Abbas Abbasi", rank: "Taxi Attendant", times: [{ days: "همه روزها", start: "14:00", end: "17:00" }] },
+        { name: "Ali Iranshahi", rank: "Taxi Attendant", times: [{ days: "همه روزها", start: "12:30", end: "15:30" }] },
+        { name: "Ariyan Rozbeh", rank: "Taxi Attendant", times: [{ days: "همه روزها", start: "22:00", end: "1:00" }] },
+        { name: "Mahdi Zamani", rank: "Taxi Manager", tags: ["Pilot"], times: [{ days: "روز زوج", start: "13:00", end: "16:00" }, { days: "روز فرد", start: "19:00", end: "21:00" }] },
+        { name: "Parham Soleimanii", rank: "Taxi Attendant", times: [{ days: "همه روزها", start: "10:00", end: "13:00" }] },
+        { name: "Taha Azizii", rank: "Taxi Manager", tags: ["Food"], times: [{ days: "همه روزها", start: "10:00", end: "13:00" }] },
+        { name: "Mahdi Shateri", rank: "Taxi Manager", tags: ["Entertainment"], times: [{ days: "روز فرد", start: "13:00", end: "16:00" }, { days: "روز زوج", start: "14:00", end: "17:00" }] },
+        { name: "Yasin Kowsari", rank: "Taxi Deputy Director", times: [{ days: "همه روزها", start: "18:00", end: "21:00" }] },
       ];
 
       const rankOrder = {
@@ -445,123 +375,58 @@
         "Taxi Manager": 4,
       };
 
-      function $(s) {
-        return document.querySelector(s);
-      }
-      function toPersianDigits(input) {
-        return String(input).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
-      }
-      function renderTags(tags) {
-        if (!tags) return "";
-        return tags
-          .map((t) => `<span class="tag ${t}">[ ${t} ]</span>`)
-          .join(" ");
-      }
-      function timeToMins(t) {
-        const [h, m] = t.split(":").map(Number);
-        return h * 60 + m;
-      }
+      function $(s) { return document.querySelector(s); }
+      function toPersianDigits(input) { return String(input).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]); }
+      function renderTags(tags) { return tags ? tags.map((t) => `<span class="tag ${t}">[ ${t} ]</span>`).join(" ") : ""; }
+      function timeToMins(t) { const [h, m] = t.split(":").map(Number); return h * 60 + m; }
 
-      // 🔹 اصلاح شده: روز زوج/فرد بر اساس روز هفته
+      // روز زوج/فرد
       function isEvenDay(date) {
-        // date.getDay(): 0=یکشنبه, 1=دوشنبه, 2=سه‌شنبه, 3=چهارشنبه, 4=پنج‌شنبه, 5=جمعه, 6=شنبه
-        // نگاشت: شنبه(6)، دوشنبه(1)، چهارشنبه(3) => زوج
         const day = date.getDay();
-        const mapping = {
-          6: true,  // شنبه = زوج
-          1: true,  // دوشنبه = زوج
-          3: true,  // چهارشنبه = زوج
-          0: false, // یکشنبه = فرد
-          2: false, // سه‌شنبه = فرد
-          4: false, // پنج‌شنبه = فرد
-          5: false  // جمعه = فرد (می‌تونی این را تغییر بدی اگر خواستی جمعه را استثنا در نظر بگیری)
-        };
+        const mapping = { 6: true, 1: true, 3: true, 0: false, 2: false, 4: false, 5: false };
         return mapping[day];
-      }
-
-      // درخواست مجوز ناتیفیکیشن
-      if (
-        "Notification" in window &&
-        Notification.permission !== "granted" &&
-        Notification.permission !== "denied"
-      ) {
-        Notification.requestPermission();
       }
 
       // ساعت
       function updateClock() {
         const now = new Date();
-        $("#clock").textContent = `${toPersianDigits(
-          String(now.getHours()).padStart(2, "0")
-        )}:${toPersianDigits(
-          String(now.getMinutes()).padStart(2, "0")
-        )}:${toPersianDigits(String(now.getSeconds()).padStart(2, "0"))}`;
+        $("#clock").textContent = `${toPersianDigits(String(now.getHours()).padStart(2, "0"))}:${toPersianDigits(String(now.getMinutes()).padStart(2, "0"))}:${toPersianDigits(String(now.getSeconds()).padStart(2, "0"))}`;
       }
 
-      // شیفت‌ها و ناتیفیکیشن
+      // شیفت‌ها
       let lastShiftHTML = "";
       const notifiedByMinute = new Set();
       function getCurrentShifts() {
         const now = new Date();
         const curMins = now.getHours() * 60 + now.getMinutes();
         const even = isEvenDay(now);
-        const startingNow = [];
-        const active = [];
-        shifts
-          .slice()
-          .sort(
-            (a, b) =>
-              (rankOrder[a.rank] || Infinity) - (rankOrder[b.rank] || Infinity)
-          )
-          .forEach((person) => {
-            person.times.forEach((t) => {
-              let match = false;
-              if (t.days === "همه روزها") match = true;
-              if (t.days === "روز زوج" && even) match = true;
-              if (t.days === "روز فرد" && !even) match = true;
-              if (!match) return;
-              const start = timeToMins(t.start);
-              let end = timeToMins(t.end);
-              if (end === 0) end = 24 * 60;
-              let inShift = false,
-                remain = 0;
-              if (start <= end) {
-                if (curMins >= start && curMins < end) {
-                  inShift = true;
-                  remain = end - curMins;
-                }
-              } else {
-                if (curMins >= start || curMins < end) {
-                  inShift = true;
-                  remain =
-                    curMins >= start ? 24 * 60 - curMins + end : end - curMins;
-                }
-              }
-              if (inShift) {
-                const rh = Math.floor(remain / 60),
-                  rm = remain % 60;
-                const nameRank = `<span dir="ltr" style="display:inline-block;">${
-                  person.name
-                } (${person.rank}) ${renderTags(person.tags)}</span>`;
-                const text =
-                  rh === 0
-                    ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده`
-                    : `${nameRank} - ${toPersianDigits(
-                        rh
-                      )} ساعت و ${toPersianDigits(rm)} دقیقه مانده`;
-                active.push({ text, name: person.name, start });
-                if (curMins === start) startingNow.push(person.name);
-              }
-            });
+        const startingNow = [], active = [];
+        shifts.slice().sort((a, b) => (rankOrder[a.rank] || Infinity) - (rankOrder[b.rank] || Infinity)).forEach((person) => {
+          person.times.forEach((t) => {
+            let match = false;
+            if (t.days === "همه روزها") match = true;
+            if (t.days === "روز زوج" && even) match = true;
+            if (t.days === "روز فرد" && !even) match = true;
+            if (!match) return;
+            const start = timeToMins(t.start);
+            let end = timeToMins(t.end);
+            if (end === 0) end = 24 * 60;
+            let inShift = false, remain = 0;
+            if (start <= end) {
+              if (curMins >= start && curMins < end) { inShift = true; remain = end - curMins; }
+            } else {
+              if (curMins >= start || curMins < end) { inShift = true; remain = curMins >= start ? 24 * 60 - curMins + end : end - curMins; }
+            }
+            if (inShift) {
+              const rh = Math.floor(remain / 60), rm = remain % 60;
+              const nameRank = `<span dir="ltr" style="display:inline-block;">${person.name} (${person.rank}) ${renderTags(person.tags)}</span>`;
+              const text = rh === 0 ? `${nameRank} - ${toPersianDigits(rm)} دقیقه مانده` : `${nameRank} - ${toPersianDigits(rh)} ساعت و ${toPersianDigits(rm)} دقیقه مانده`;
+              active.push({ text, name: person.name, start });
+              if (curMins === start) startingNow.push(person.name);
+            }
           });
-        return {
-          active,
-          startingNow,
-          minuteKey:
-            String(now.getHours()).padStart(2, "0") +
-            ":" +
-            String(now.getMinutes()).padStart(2, "0"),
-        };
+        });
+        return { active, startingNow, minuteKey: String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") };
       }
 
       async function handleStartNotifications(names, minuteKey) {
@@ -569,71 +434,38 @@
         const key = minuteKey + ":" + unique.join(",");
         if (notifiedByMinute.has(key)) return;
         notifiedByMinute.add(key);
-        try {
-          await $("#notifSound").play();
-        } catch (e) {}
+        try { await $("#notifSound").play(); } catch (e) {}
         const body = `شیفت ${unique.join(" و ")} شروع شد`;
-        if ("Notification" in window && Notification.permission === "granted") {
-          new Notification("شیفت شروع شد", { body });
-        }
+        if ("Notification" in window && Notification.permission === "granted") { new Notification("شیفت شروع شد", { body }); }
       }
 
       function renderCurrentShifts() {
         const { active, startingNow, minuteKey } = getCurrentShifts();
-        if (startingNow.length > 0)
-          handleStartNotifications(startingNow, minuteKey);
-        const html = active.length
-          ? active.map((a) => `<div class="shift-now">${a.text}</div>`).join("")
-          : `<div class="shift-now">در حال حاضر کسی در شیفت نیست</div>`;
-        if (html !== lastShiftHTML) {
-          $("#shift-list").innerHTML = html;
-          lastShiftHTML = html;
-        }
+        if (startingNow.length > 0) handleStartNotifications(startingNow, minuteKey);
+        const html = active.length ? active.map((a) => `<div class="shift-now">${a.text}</div>`).join("") : `<div class="shift-now">در حال حاضر کسی در شیفت نیست</div>`;
+        if (html !== lastShiftHTML) { $("#shift-list").innerHTML = html; lastShiftHTML = html; }
       }
 
       // جدول کامل
       function renderFullSchedule() {
         const tbody = $("#full-schedule tbody");
-        tbody.innerHTML = shifts
-          .slice()
-          .sort(
-            (a, b) =>
-              (rankOrder[a.rank] || Infinity) - (rankOrder[b.rank] || Infinity)
-          )
-          .map((p) =>
-            p.times
-              .map(
-                (t) => `
-    <tr data-person="${p.name}">
-      <td data-label="نام"><span class="person-name" data-name="${p.name}">${
-                  p.name
-                }</span></td>
-      <td data-label="رنک"><span dir="ltr">${p.rank} ${renderTags(
-                  p.tags
-                )}</span></td>
-      <td data-label="روز/حالت">${t.days}</td>
-      <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(
-                  t.end
-                )}</td>
-    </tr>
-  `
-              )
-              .join("")
-          )
-          .join("");
+        tbody.innerHTML = shifts.slice().sort((a, b) => (rankOrder[a.rank] || Infinity) - (rankOrder[b.rank] || Infinity))
+          .map((p) => p.times.map((t) => `
+            <tr data-person="${p.name}">
+              <td data-label="نام"><span class="person-name" data-name="${p.name}">${p.name}</span></td>
+              <td data-label="رنک"><span dir="ltr">${p.rank} ${renderTags(p.tags)}</span></td>
+              <td data-label="روز/حالت">${t.days}</td>
+              <td data-label="ساعت">${toPersianDigits(t.start)} تا ${toPersianDigits(t.end)}</td>
+            </tr>
+          `).join("")).join("");
         attachNameEvents();
       }
 
       // یادداشت‌ها
       let notes = {};
-      try {
-        notes = JSON.parse(localStorage.getItem("taxiNotes") || "{}");
-      } catch (e) {}
+      try { notes = JSON.parse(localStorage.getItem("taxiNotes") || "{}"); } catch (e) {}
       let currentNotePerson = null;
-      const overlay = $("#modalOverlay"),
-        popup = $("#notePopup"),
-        noteText = $("#noteText"),
-        noteSavedEl = $("#noteSaved");
+      const overlay = $("#modalOverlay"), popup = $("#notePopup"), noteText = $("#noteText"), noteSavedEl = $("#noteSaved");
       function attachNameEvents() {
         document.querySelectorAll(".person-name").forEach((el) => {
           el.addEventListener("dblclick", () => openNote(el.dataset.name));
@@ -644,24 +476,18 @@
         currentNotePerson = name;
         noteText.value = notes[name] || "";
         $("#noteTitle").textContent = `یادداشت برای: ${name}`;
-        overlay.classList.add("show");
-        overlay.setAttribute("aria-hidden", "false");
-        popup.classList.add("show");
-        popup.setAttribute("aria-hidden", "false");
+        overlay.classList.add("show"); overlay.setAttribute("aria-hidden", "false");
+        popup.classList.add("show"); popup.setAttribute("aria-hidden", "false");
         setTimeout(() => noteText.focus(), 120);
       }
       function closeNote() {
-        popup.classList.remove("show");
-        popup.setAttribute("aria-hidden", "true");
-        overlay.classList.remove("show");
-        overlay.setAttribute("aria-hidden", "true");
+        popup.classList.remove("show"); popup.setAttribute("aria-hidden", "true");
+        overlay.classList.remove("show"); overlay.setAttribute("aria-hidden", "true");
       }
       $("#saveNote").addEventListener("click", () => {
         if (!currentNotePerson) return;
         notes[currentNotePerson] = noteText.value;
-        try {
-          localStorage.setItem("taxiNotes", JSON.stringify(notes));
-        } catch (e) {}
+        try { localStorage.setItem("taxiNotes", JSON.stringify(notes)); } catch (e) {}
         noteSavedEl.classList.add("show");
         setTimeout(() => noteSavedEl.classList.remove("show"), 1500);
         closeNote();
@@ -669,6 +495,7 @@
       $("#closeNote").addEventListener("click", closeNote);
       overlay.addEventListener("click", closeNote);
 
+      // اجرا
       updateClock();
       renderCurrentShifts();
       renderFullSchedule();
