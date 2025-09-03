@@ -134,7 +134,14 @@ function $(s){return document.querySelector(s);}
 function toPersianDigits(input){return String(input).replace(/\d/g,d=>"۰۱۲۳۴۵۶۷۸۹"[d]);}
 function renderTags(tags){return tags?tags.map(t=>`<span class="tag ${t}">[ ${t} ]</span>`).join(" "):"";}
 function timeToMins(t){const [h,m]=t.split(":").map(Number);return h*60+m;}
-function isEvenDay(date){return date.getDate() % 2 === 0;}
+
+// تغییر این تابع بر اساس روزهای هفته
+function isEvenDay(date){
+  const day=date.getDay(); // 0=یکشنبه، 6=شنبه
+  // شنبه=6 زوج, یکشنبه=0 فرد, دوشنبه=1 زوج, سه شنبه=2 فرد, چهارشنبه=3 زوج, پنج شنبه=4 فرد, جمعه=5 زوج
+  return [6,1,3,5].includes(day); // شنبه، دوشنبه، چهارشنبه، جمعه زوج
+}
+
 function updateClock(){const now=new Date();$("#clock").textContent=`${toPersianDigits(String(now.getHours()).padStart(2,"0"))}:${toPersianDigits(String(now.getMinutes()).padStart(2,"0"))}:${toPersianDigits(String(now.getSeconds()).padStart(2,"0"))}`;}
 
 let lastShiftHTML="";
@@ -189,7 +196,6 @@ function renderCurrentShifts(){
   const html=active.length?active.map(a=>`<div class="shift-now">${a.text}</div>`).join(""):`<div class="shift-now">در حال حاضر کسی در شیفت نیست</div>`;
   if(html!==lastShiftHTML){$("#shift-list").innerHTML=html;lastShiftHTML=html;}
 
-  // انیمیشن با تأخیر پله‌ای برای شیفت‌ها
   const shiftEls = document.querySelectorAll(".shift-now");
   shiftEls.forEach((el,i)=>{ el.style.animationDelay = (i*0.08) + "s"; });
 }
@@ -228,7 +234,6 @@ function renderFullSchedule(){
     </tr>`).join("")).join("");
   attachNameEvents();
 
-  // انیمیشن با تأخیر پله‌ای برای ردیف‌های جدول
   const trs = document.querySelectorAll("#full-schedule tbody tr");
   trs.forEach((tr,i)=>{ tr.style.animationDelay = (i*0.07) + "s"; });
 }
@@ -248,4 +253,3 @@ setInterval(renderCurrentShifts,1000);
 </script>
 </body>
 </html>
-
